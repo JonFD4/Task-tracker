@@ -1,6 +1,7 @@
-from flask import render_template
+from flask import render_template,request, redirect, url_for, jsonify
 from taskmanager import app, db
 from taskmanager.models import Category, Task
+from sqlalchemy.exc import IntegrityError
 
 
 # view functions
@@ -10,11 +11,26 @@ def home():
 
 @app.route('/categories')
 def categories():
-    return render_template("categories.html")
+    categories = Category.query.order_by(Category.category_name).all()
+    return render_template("categories.html",categories=categories)
 
 
 ## methods for getting and submit forms to the database
-@app.route('/add_category', methods = ["GET", "POST"])
+
+@app.route('/add_category', methods=["GET", "POST"])
 def add_category():
-    
+    if request.method == "POST":
+        category_name = request.form.get("category_name")
+        if category_name:
+            new_category = Category(category_name=category_name)
+            db.session.add(new_category)
+            db.session.commit()
+            """try:
+                db.session.commit()
+                return jsonify({'message': 'Category created successfully'}), 201
+            except IntegrityError:
+                db.session.rollback()
+                return jsonify({'error': 'Category already exists'}), 400
+        else:
+            return jsonify({'error': 'Category name not provided'}), 400"""
     return render_template("add_category.html")
