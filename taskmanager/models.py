@@ -5,7 +5,7 @@ class Category(db.Model):
     # schema for category table
     id = db.Column(db.Integer, primary_key= True)
     category_name = db.Column(db.String(25), unique=True, nullable=False) # maximum character count is 25, each category added is unique, nullable ensures that it is a required field
-    tasks = db.relationship("TASK", backref="category", cascade = "all , delete", lazy = True)
+    tasks = db.relationship("Task", backref="category", cascade = "all , delete", lazy = True)
     def __repr__(self):
         # to represent itself in the form of a string
         return self.category_name
